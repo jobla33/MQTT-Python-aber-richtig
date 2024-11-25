@@ -1,4 +1,5 @@
 import paho.mqtt.client as mqtt
+import numpy as np
 from collections import deque
 from database import store_in_database
 
@@ -28,7 +29,6 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("esp32/sensor")
 
 def on_message(client, userdata, msg):
-    global last_response_time
     try:
         # Sensordaten empfangen und verarbeiten
         sensor_value = int(msg.payload.decode())  # 12-Bit-Wert empfangen
@@ -39,3 +39,11 @@ def on_message(client, userdata, msg):
         store_in_database(smoothed_value, 'sensor_data.db')
     except Exception as e:
         print(f"Fehler: {e}")
+
+def main():
+    client = mqtt.Client()
+    client.on_connect = on_connect
+    client.on_message = on_message
+
+    client.connect("localhost", 1883, 60)
+    client.loop_forever()

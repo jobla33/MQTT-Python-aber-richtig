@@ -4,12 +4,14 @@ import mqtt
 import processing 
 
 def run_mqtt():
-        mqtt.main()  # Assuming mqtt.py has a main function to run the loop
+    while True:
+        mqtt.main()
+        time.sleep(1)
 
 def run_processing():
     while True:
-        processing.main()  # Assuming processing.py has a main function to process data
-        time.sleep(3)
+        processing.main()
+        time.sleep(1)
 
 if __name__ == "__main__":
     mqtt_process = multiprocessing.Process(target=run_mqtt)

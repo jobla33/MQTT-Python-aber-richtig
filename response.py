@@ -25,4 +25,5 @@ def calculate_response(value):
         return f"p2,v,100,{calculate_scaled_response(max_ph,value,factor)}"
     return "No action"
 
-get_latest_value('ph_data.db')
+def main():   
+    return calculate_response(get_latest_value('ph_data.db'))

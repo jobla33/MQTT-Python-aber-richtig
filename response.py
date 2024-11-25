@@ -26,4 +26,5 @@ def calculate_response(value):
     return "No action"
 
 def main():   
-    return calculate_response(get_latest_value('ph_data.db'))
+    ph = get_latest_value('ph_data.db')
+    return calculate_response(float(ph[1]))

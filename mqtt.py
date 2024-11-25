@@ -2,6 +2,7 @@ import paho.mqtt.client as mqtt
 import numpy as np
 from collections import deque
 from database import store_in_database
+from multiprocessing import Queue
 
 # Median- und Durchschnittspuffer initialisieren
 median_window = deque(maxlen=5)  # Medianfilter-Fenster
@@ -40,10 +41,27 @@ def on_message(client, userdata, msg):
     except Exception as e:
         print(f"Fehler: {e}")
 
-def main():
+def publish_message(client, topic, message):
+    try:
+        client.publish(topic, message)
+        print(f"Nachricht gesendet: {message}")
+    except Exception as e:
+        print(f"Fehler beim Senden der Nachricht: {e}")
+
+def main(message_queue):
     client = mqtt.Client()
     client.on_connect = on_connect
     client.on_message = on_message
 
     client.connect("localhost", 1883, 60)
-    client.loop_forever()
+    client.loop_start()  # Startet den MQTT-Client im Hintergrund
+
+    try:
+        while True:
+            if not message_queue.empty():
+                message = message_queue.get()
+                publish_message(client, 'response', message)
+    except KeyboardInterrupt:
+        print("Beende MQTT-Client...")
+        client.loop_stop()
+        client.disconnect()
